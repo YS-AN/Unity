@@ -75,3 +75,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 */Assets/Imports
 */Assets/Prefabs
+*/Assets/Configs/Audio
+
+SubProject/

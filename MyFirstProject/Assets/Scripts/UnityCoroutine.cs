@@ -31,6 +31,7 @@ public class UnityCoroutine : MonoBehaviour
 	{
 		//3초 기다렸다가 로그 찍기
 		yield return new WaitForSeconds(3f); //3초마다 리턴함
+
 		Debug.Log($"3초 지남. 로그 찍기");
 
 		/*
@@ -60,6 +61,6 @@ public class UnityCoroutine : MonoBehaviour
 	IEnumerator CoRoutineWait()
 	{
 		yield return new WaitForSeconds(1); // n초간 시간지연
-		yield return null; // 시간지연 없음
+		yield return null; // 시간지연 없음 (지연 없이 1프레임만 기다리게 하게는 방법)
 	}
 }

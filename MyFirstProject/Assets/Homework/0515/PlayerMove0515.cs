@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class UnityPlayerMoveController : MonoBehaviour
+public class PlayerMove0515 : MonoBehaviour
 {
 	/// <summary>
 	/// 움직이는 방향 저장
@@ -19,9 +19,6 @@ public class UnityPlayerMoveController : MonoBehaviour
 
 	[SerializeField]
 	private float rotateSpeed;
-
-	[SerializeField]
-	private Camera mapCam;
 
 	[Header("Shooter")]
 	[SerializeField]
@@ -60,7 +57,6 @@ public class UnityPlayerMoveController : MonoBehaviour
 		//this.gameObject.transform.localScale += Vector3.one * 0.0001f; 
 
 		Camera.main.transform.LookAt(this.gameObject.transform);
-		mapCam.transform.LookAt(this.gameObject.transform);
 	}
 
 	private void Jump()
@@ -68,6 +64,11 @@ public class UnityPlayerMoveController : MonoBehaviour
 		Debug.Log("jump");
 
 		rb.AddForce(moveDir * jumpPower, ForceMode.Impulse); //Impulse : 힘을 한번에 줌 -> (1초에 줄 힘을 한번에 훅하고 주는 방식)
+	}
+
+	private void Rotate()
+	{
+		
 	}
 
 
@@ -78,18 +79,34 @@ public class UnityPlayerMoveController : MonoBehaviour
 		// 근데 우리가 움직일 떄 위 아래 움직인다고 해서 갑자기 공이 위로 뜨면 이상해.
 		// 그러니까 동서남북 느낌으로 움직일 수 있또록 y를 z에 넣어줌 z가 앞뒤고, x가 좌우니까
 
-		moveDir.x = value.Get<Vector2>().x;
+		//moveDir.x = value.Get<Vector2>().x;
 		moveDir.z = value.Get<Vector2>().y; //보통 Z가 앞뒤임
 	}
 
-	private void Rotate()
+	private void OnRotate(InputValue value)
 	{
-		transform.Rotate(Vector3.up, moveDir.x * rotateSpeed * Time.deltaTime, Space.Self);
+		//Debug.Log($"{value.Get<Vector2>().x}, {value.Get<Vector2>().y}");
+		//transform.Rotate(0, value.Get<Vector2>().y * rotateSpeed * Time.deltaTime, 0);
+		// up = 기준 y축 
+		// x 값 받는 건 어느 방향으로 돌릴거니?
+		// 어떤 축이 기준이니? 세상이니? 오브젝트니?
+
+		//Debug.Log($"{value.Get<Vector2>().x}, {value.Get<Vector2>().y}  => {moveDir.x}, {moveDir.y}, {moveDir.z}");
+
+
+		//moveDir.x = value.Get<Vector2>().x;
+		transform.Rotate(Vector3.up, value.Get<Vector2>().x * rotateSpeed * Time.deltaTime, Space.Self);
+
+		//transform.Rotate(0, value.Get<Vector2>().y * rotateSpeed * Time.deltaTime, 0, Space.Self);
+
+		//transform.Rotate(value.Get<Vector2>().x * Vector3.up * rotateSpeed * Time.deltaTime);
 	}
 
 	private void OnJump(InputValue value)
 	{
 		moveDir.y = value.Get<Vector2>().y;
+
+
 
 		Jump(); //점프를 누를 때만 작동하도록 함
 				//Move는 프레이 마다 움직임이 바뀌지만 jump는 누를 때만 반응해야해서, 호출 위치가 다른 것
@@ -101,8 +118,6 @@ public class UnityPlayerMoveController : MonoBehaviour
 	/// <param name="value"></param>
 	private void OnFire(InputValue value)
 	{
-		Debug.Log("OnFire");
-
 		//OnFire 잘 작동하는지 확인
 		//Debug.Log("OnFire");
 
@@ -148,16 +163,14 @@ public class UnityPlayerMoveController : MonoBehaviour
 	/// <param name="value"></param>
 	private void OnRepeatFire(InputValue value)
 	{
-		//Debug.Log("OnRepeatFire");
-
 		if (value.isPressed)
 		{
-			//Debug.Log("누르다");
+			Debug.Log("누르다");
 			bulletRoution = StartCoroutine(BulletMakeRoutine());
 		}
 		else
 		{
-			//Debug.Log("떼다");
+			Debug.Log("떼다");
 			StopCoroutine(bulletRoution);
 		}
 	}
