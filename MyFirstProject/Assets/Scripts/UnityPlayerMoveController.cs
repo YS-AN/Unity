@@ -39,6 +39,8 @@ public class UnityPlayerMoveController : MonoBehaviour
 	[SerializeField]
 	private float repeatTime;
 
+
+
 	private void Awake()
 	{
 		//moveDir = this.gameObject.transform.position;

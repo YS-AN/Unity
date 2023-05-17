@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "Rotate",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "72c3b194-00c4-4be6-8c2f-7bad7f61cb1b",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -196,6 +196,34 @@
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Camera",
+            "id": "ff369819-9f68-49e8-b6c0-d5f72ff1ceff",
+            "actions": [
+                {
+                    "name": "TransCamera",
+                    "type": "PassThrough",
+                    "id": "6952f2ac-0d3f-419d-8e22-7d5c5515c351",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "837e6df7-5ee5-4d40-86e2-3d971b457ab3",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TransCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

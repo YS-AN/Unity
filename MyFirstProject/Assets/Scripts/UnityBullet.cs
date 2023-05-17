@@ -1,20 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
-// ´Ù¸¥ ÄÄÆ÷³ÍÆ®¿¡ ÀÇÁ¸ÇÏ°í ÀÖÀ» ‹š RequireComponentÇÏ¸é¼­ ²À ÇÊ¿äÇÑ ÄÄÆ÷³ÍÆ®¸¦ ¾Ë·ÁÁÜ
+// ë‹¤ë¥¸ ì»´í¬ë„ŒíŠ¸ì— ì˜ì¡´í•˜ê³  ìˆì„ ë–„ RequireComponentí•˜ë©´ì„œ ê¼­ í•„ìš”í•œ ì»´í¬ë„ŒíŠ¸ë¥¼ ì•Œë ¤ì¤Œ
 [RequireComponent(typeof(Rigidbody))]
 public class UnityBullet : MonoBehaviour
 {
     [SerializeField]
-    private float bulletSpeed; //ÃÑ¾Ë ¹ß»ç ½ºÇÇµå ¹Ş¾Æ¿È
+    private float bulletSpeed; //ì´ì•Œ ë°œì‚¬ ìŠ¤í”¼ë“œ ë°›ì•„ì˜´
 
     [SerializeField]
-    private GameObject explosionEffect; //ÃÑ¾ËÀÌ ¿ÀºêÁ§Æ®¿Í Ãæµ¹ÇÒ ¶§ º¸¿©ÁÙ È¿°ú
+    private GameObject explosionEffect; //ì´ì•Œì´ ì˜¤ë¸Œì íŠ¸ì™€ ì¶©ëŒí•  ë•Œ ë³´ì—¬ì¤„ íš¨ê³¼
 
-    private Rigidbody rb;
+	[SerializeField]
+	private AudioClip explosionSound; //ì´ì¼ í„°ì§ˆ ë•Œ ë‚  ì†Œë¦¬
 
-    void Awake()
+	private Rigidbody rb;
+    private AudioSource explosionAudio;
+
+	void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
@@ -23,16 +28,29 @@ public class UnityBullet : MonoBehaviour
     {
         rb.velocity = transform.forward * bulletSpeed;
 
-        Destroy(gameObject, 5f); //5ÃÊµÚ »èÁ¦
-    }
+        Destroy(gameObject, 5f); //5ì´ˆë’¤ ì‚­ì œ
+
+		explosionAudio = explosionEffect.AddComponent<AudioSource>();
+		explosionAudio.clip = explosionSound;
+	}
 
     /// <summary>
-    /// Ãæµ¹ ½Ã 
+    /// ì¶©ëŒ ì‹œ 
     /// </summary>
     /// <param name="collision"></param>
 	private void OnCollisionEnter(Collision collision)
 	{
-        Instantiate(explosionEffect, transform.position, transform.rotation); //ÅÍÁö´Â È¿°ú ³Ö°í,
-        Destroy(gameObject); //ÇöÀç °ÔÀÓ ¿ÀºêÁ§Æ®(ÃÑ¾Ë)À» ¾ø¾Ú
+		/* [ë©”ëª¨]
+		 * this.gameObject(ì´ì•Œ)ì— AudioSourceì¶”ê°€í•´ì„œ í„°ì§€ëŠ” ì‚¬ìš´ë“œì™€ íš¨ê³¼ë¥¼ ë„£ê³ , í˜„ì¬ ê²Œì„ ì˜¤ë¸Œì íŠ¸ë¥¼ ì—†ì• ë ¤ê³  í•˜ë‹ˆ
+		   ì‚¬ìš´ë“œ í”Œë ˆì´ì™€ ë™ì‹œì— ì˜¤ë¸Œì íŠ¸ê°€ ì‚­ì œë˜ì–´ì„œ ì‚¬ìš´ë“œê°€ ì¬ìƒë˜ì§€ ì•ŠëŠ” í˜„ìƒì´ ë°œìƒí•¨. 
+		
+			AudioSourceë¥¼ this.gameObjectê°€ ì•„ë‹ˆë¼ explosionEffectì— ë„£ì–´ì„œ ì •ìƒì ì‘ë¡œ ì¬ìƒ ë˜ë„ë¡ í•¨.
+		*/
+
+		Instantiate(explosionEffect, transform.position, transform.rotation); //í„°ì§€ëŠ” íš¨ê³¼ ë„£ê³ ,
+		explosionAudio.Play(); //í„°ì§€ëŠ” ì‚¬ìš´ë“œ ë„£ê³ ,
+
+		Destroy(gameObject); //í˜„ì¬ ê²Œì„ ì˜¤ë¸Œì íŠ¸(ì´ì•Œ) ì œê±°
+
 	}
 }
