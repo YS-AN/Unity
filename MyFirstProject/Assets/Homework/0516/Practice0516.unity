@@ -536,7 +536,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 930944785}
-  m_LocalRotation: {x: 0.18551375, y: -0.02828492, z: 0.0053422274, w: 0.98222}
+  m_LocalRotation: {x: 0.18551375, y: -0.028284902, z: 0.0053422237, w: 0.98222}
   m_LocalPosition: {x: -6, y: 3.88, z: -13.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1390,7 +1390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movePower: 10
-  rotateSpeed: 15
+  rotateSpeed: 50
   MapCam: {fileID: 726376937}
   bulletPrefab: {fileID: 8551780311271036335, guid: af136557ba109d445987c3b629e2bff7, type: 3}
   bulletPoint: {fileID: 1660490824}

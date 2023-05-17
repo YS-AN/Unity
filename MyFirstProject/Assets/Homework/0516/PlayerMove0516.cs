@@ -101,7 +101,7 @@ public class PlayerMove0516 : MonoBehaviour
 
 	private void Rotate() //float x
 	{
-		this.gameObject.transform.Rotate(Vector3.up * rotateSpeed* Time.deltaTime * rotateDir.x, Space.Self);
+		this.gameObject.transform.Rotate(Vector3.up, rotateDir.x * rotateSpeed * Time.deltaTime, Space.Self);
 	}
 
 	private void OnRotate(InputValue value)
