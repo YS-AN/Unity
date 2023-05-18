@@ -10,6 +10,7 @@ public class UnityPlayerMoveController : MonoBehaviour
 	/// </summary>
 	private Vector3 moveDir;
 	private Rigidbody rb;
+	private Animator animator;
 
 	[SerializeField]
 	private float movePower;
@@ -41,10 +42,12 @@ public class UnityPlayerMoveController : MonoBehaviour
 
 
 
+
 	private void Awake()
 	{
 		//moveDir = this.gameObject.transform.position;
 		rb = GetComponent<Rigidbody>();
+		animator = GetComponent<Animator>();
 	}
 
 	private void Update()
@@ -80,7 +83,7 @@ public class UnityPlayerMoveController : MonoBehaviour
 		// 근데 우리가 움직일 떄 위 아래 움직인다고 해서 갑자기 공이 위로 뜨면 이상해.
 		// 그러니까 동서남북 느낌으로 움직일 수 있또록 y를 z에 넣어줌 z가 앞뒤고, x가 좌우니까
 
-		moveDir.x = value.Get<Vector2>().x;
+		
 		moveDir.z = value.Get<Vector2>().y; //보통 Z가 앞뒤임
 	}
 
@@ -88,6 +91,12 @@ public class UnityPlayerMoveController : MonoBehaviour
 	{
 		transform.Rotate(Vector3.up, moveDir.x * rotateSpeed * Time.deltaTime, Space.Self);
 	}
+
+	private void OnRotate(InputValue value)
+	{
+		moveDir.x = value.Get<Vector2>().x;
+	}
+
 
 	private void OnJump(InputValue value)
 	{
@@ -97,13 +106,20 @@ public class UnityPlayerMoveController : MonoBehaviour
 				//Move는 프레이 마다 움직임이 바뀌지만 jump는 누를 때만 반응해야해서, 호출 위치가 다른 것
 	}
 
+	public void MakeBullet()
+	{
+		Instantiate(bulletPrefab, bulletPoint.position, bulletPoint.rotation);
+
+		animator.SetTrigger("Fire");
+	}
+
 	/// <summary>
 	/// 스페이스바 눌렀을 때 총알 발사
 	/// </summary>
 	/// <param name="value"></param>
 	private void OnFire(InputValue value)
 	{
-		Debug.Log("OnFire");
+		//Debug.Log("OnFire");
 
 		//OnFire 잘 작동하는지 확인
 		//Debug.Log("OnFire");
@@ -127,7 +143,7 @@ public class UnityPlayerMoveController : MonoBehaviour
 		//		-> 탱크와 위치나 방향이 동일하게 움직여야 하기 때문에 탱크의 자식으로 들어가도록 설정한 것
 		//GameObject obj = Instantiate(bulletPrefab, bulletPoint.position, bulletPoint.rotation);
 
-		Instantiate(bulletPrefab, bulletPoint.position, bulletPoint.rotation);
+		MakeBullet();
 	}
 
 	/// <summary>
@@ -139,7 +155,7 @@ public class UnityPlayerMoveController : MonoBehaviour
 	{
 		while (true)
 		{
-			Instantiate(bulletPrefab, bulletPoint.position, bulletPoint.rotation);
+			MakeBullet();
 			yield return new WaitForSeconds(repeatTime);
 		}
 	}

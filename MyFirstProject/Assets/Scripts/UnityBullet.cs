@@ -30,8 +30,11 @@ public class UnityBullet : MonoBehaviour
 
         Destroy(gameObject, 5f); //5초뒤 삭제
 
+		//*
 		explosionAudio = explosionEffect.AddComponent<AudioSource>();
 		explosionAudio.clip = explosionSound;
+		explosionAudio.priority = 130;
+		//*/
 	}
 
     /// <summary>
@@ -47,8 +50,16 @@ public class UnityBullet : MonoBehaviour
 			AudioSource를 this.gameObject가 아니라 explosionEffect에 넣어서 정상적응로 재생 되도록 함.
 		*/
 
+		//이유는 알 수 없지만... 폭발 효와에 AudioSource가 붙어서 떨어지지 않는다...?!
+		var sound = explosionEffect.GetComponent<AudioSource>();
+		if (sound != null)
+		{
+			sound.mute = true;
+			sound.enabled = false;
+		}
+		//explosionAudio.Play(); //터지는 사운드 넣고,
 		Instantiate(explosionEffect, transform.position, transform.rotation); //터지는 효과 넣고,
-		explosionAudio.Play(); //터지는 사운드 넣고,
+		
 
 		Destroy(gameObject); //현재 게임 오브젝트(총알) 제거
 
