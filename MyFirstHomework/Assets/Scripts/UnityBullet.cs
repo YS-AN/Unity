@@ -46,9 +46,9 @@ public class UnityBullet : MonoBehaviour
 
 		*/
 
-		Instantiate(explosionEffect, transform.position, transform.rotation); //터지는 효과 넣고,
-
+		var newEffect = Instantiate(explosionEffect, transform.position, transform.rotation); //터지는 효과 넣고,
+		
 		Destroy(gameObject); //현재 게임 오브젝트(총알) 제거
-
+		Destroy(newEffect, 5f); //효과 제거
 	}
 }
