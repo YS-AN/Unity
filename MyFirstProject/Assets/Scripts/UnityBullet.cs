@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -13,11 +14,7 @@ public class UnityBullet : MonoBehaviour
     [SerializeField]
     private GameObject explosionEffect; //총알이 오브젝트와 충돌할 때 보여줄 효과
 
-	[SerializeField]
-	private AudioClip explosionSound; //총일 터질 때 날 소리
-
 	private Rigidbody rb;
-    private AudioSource explosionAudio;
 
 	void Awake()
     {
@@ -29,12 +26,6 @@ public class UnityBullet : MonoBehaviour
         rb.velocity = transform.forward * bulletSpeed;
 
         Destroy(gameObject, 5f); //5초뒤 삭제
-
-		//*
-		explosionAudio = explosionEffect.AddComponent<AudioSource>();
-		explosionAudio.clip = explosionSound;
-		explosionAudio.priority = 130;
-		//*/
 	}
 
     /// <summary>
@@ -48,18 +39,12 @@ public class UnityBullet : MonoBehaviour
 		   사운드 플레이와 동시에 오브젝트가 삭제되어서 사운드가 재생되지 않는 현상이 발생함. 
 		
 			AudioSource를 this.gameObject가 아니라 explosionEffect에 넣어서 정상적응로 재생 되도록 함.
+			-> explosionEffect효과이 이미 AudioSource가 있음...?!?!?! 그래서 그냥 explosionEffect에 있는 거 쓰기로 함
 		*/
 
-		//이유는 알 수 없지만... 폭발 효와에 AudioSource가 붙어서 떨어지지 않는다...?!
-		var sound = explosionEffect.GetComponent<AudioSource>();
-		if (sound != null)
-		{
-			sound.mute = true;
-			sound.enabled = false;
-		}
-		//explosionAudio.Play(); //터지는 사운드 넣고,
-		Instantiate(explosionEffect, transform.position, transform.rotation); //터지는 효과 넣고,
-		
+		var newEffect = Instantiate(explosionEffect, transform.position, transform.rotation); //터지는 효과 넣고,
+		Destroy(newEffect, 5);
+
 
 		Destroy(gameObject); //현재 게임 오브젝트(총알) 제거
 
