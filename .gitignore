@@ -77,5 +77,6 @@ crashlytics-build.properties
 */Assets/Prefabs
 */Assets/Configs/Audio
 */Assets/TextMesh Pro
+*/Assets/Tilemap
 
 SubProject/
