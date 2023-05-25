@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.U2D.Path;
 using UnityEngine;
 using UnDead;
-using UnityEngine.Events;
+using UnityEditor.Experimental.GraphView;
 
 public class UnDeadController : Enemy
 {
@@ -26,19 +26,33 @@ public class UnDeadController : Enemy
 	{
 		base.Start();
 
-		ReutnrPosition = transform.position;
-
 		stateMachine.SetUp(EnemyStateType.Idle);
 	}
 
 	private void Update()
 	{
-		stateMachine.Update();
+		if(curHP > 0)
+		{
+			stateMachine.Update();
+		}
+		else
+		{
+			Die();
+		}
 	}
 
 	protected void Die()
 	{
 		stateMachine.ChangeState(EnemyStateType.Die);
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireSphere(transform.position, DataModel.DetectRange);
+
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(transform.position, DataModel.AttackRange);
 	}
 }
 
@@ -80,6 +94,7 @@ namespace UnDead
 		}
 	}
 
+	//todo. 좌우로만 따라가도록 수정
 	public class TraceState : EnemyStatePattern<UnDeadController>
 	{
 		public TraceState(UnDeadController owner, StateMachine<EnemyStateType, UnDeadController> stateMachine)
@@ -143,11 +158,13 @@ namespace UnDead
 
 		public override void Enter()
 		{
+			animator.SetBool("IsAttack", true);
 			lastAttakTime = 0;
 		}
 
 		public override void Exit()
 		{
+			animator.SetBool("IsAttack", false);
 		}
 
 		public override void Transition()
@@ -163,11 +180,15 @@ namespace UnDead
 		{
 			if (lastAttakTime > owner.DataModel.AttackTime)
 			{
+				animator.SetTrigger("DoAttack");
+
 				//todo. 공격 구현 
-				UnityEngine.Debug.Log("공격");
+				Debug.Log($"[공격] {owner.DataModel.AttackPower}");
+
 				lastAttakTime = 0;
 			}
 			lastAttakTime += Time.deltaTime;
+
 		}
 	}
 
@@ -232,6 +253,7 @@ namespace UnDead
 
 		public override void Enter()
 		{
+			owner.Destroy();
 		}
 
 		public override void Exit()

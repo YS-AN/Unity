@@ -5,8 +5,6 @@ using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
 {
-	
-
 	private Rigidbody2D rigidbd;
 	public Rigidbody2D Rigidbody { get { return rigidbd; } }
 
@@ -23,13 +21,21 @@ public class Enemy : MonoBehaviour
 	private EnemyModel dataModel;
 	public EnemyModel DataModel { get { return dataModel; } }
 
-	[SerializeField]
-	private float enemyHealth;
+	/// <summary>
+	/// 현재 체력
+	/// </summary>
+	public float curHP { get; private set; }
 
-	private Transform target;
+	/// <summary>
+	/// 플레이어
+	/// </summary>
 	public Transform Target { get { return target; } }
+	private Transform target;
 
-	public Vector3 ReutnrPosition { protected set; get; }
+	/// <summary>
+	/// 현재 위치
+	/// </summary>
+	public Vector3 ReutnrPosition { get; protected set; }
 
 	protected virtual void Awake()
 	{
@@ -37,18 +43,25 @@ public class Enemy : MonoBehaviour
 		animator = GetComponent<Animator>();
 		colider = GetComponent<Collider2D>();
 		spriteRnder = GetComponent<SpriteRenderer>();
+
+		curHP = dataModel.MaxHP;
 	}
 
 	protected virtual void Start()
 	{
-		//todo. 싱글톤으로 만들 경우 변경하기! 
+		ReutnrPosition = transform.position;
 		target = GameObject.FindGameObjectWithTag("Player").transform;
 	}
 
 	public void GetDamange(float damage)
 	{
-		enemyHealth -= damage;
+		curHP -= damage;
 
-		Debug.Log(enemyHealth);
+		Debug.Log($"[GetDamange] {curHP}");
+	}
+
+	public void Destroy()
+	{
+		Destroy(gameObject);
 	}
 }
