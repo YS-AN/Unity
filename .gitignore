@@ -85,3 +85,6 @@ crashlytics-build.properties
 */*/Assets/Configs/Audio
 */*/Assets/TextMesh Pro
 */*/Assets/Tilemap
+
+# temp exclude
+*/UndeadSurvivor
