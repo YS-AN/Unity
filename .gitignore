@@ -79,4 +79,9 @@ crashlytics-build.properties
 */Assets/TextMesh Pro
 */Assets/Tilemap
 
-SubProject/
+# SubProject Assets
+*/*/Assets/Imports
+*/*/Assets/Prefabs
+*/*/Assets/Configs/Audio
+*/*/Assets/TextMesh Pro
+*/*/Assets/Tilemap
