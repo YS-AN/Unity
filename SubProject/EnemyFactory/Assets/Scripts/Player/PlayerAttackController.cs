@@ -25,7 +25,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		if(enemy != null)
 		{
-			enemy.GetDamange(2f);
+			enemy.GetDamage(2f);
 		}
 		
 	}

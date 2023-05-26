@@ -8,6 +8,13 @@ using Unity.VisualScripting;
 
 public class SkeletonController : Enemy
 {
+	[Header("Shooter")]
+	[SerializeField]
+	private GameObject AttackObj;
+
+	[SerializeField]
+	private Transform AttackPoint;
+
 	private StateMachine<EnemyStateType, SkeletonController> stateMachine;
 
 	protected override void Awake()
@@ -17,7 +24,6 @@ public class SkeletonController : Enemy
 		stateMachine = new StateMachine<EnemyStateType, SkeletonController>(this);
 		stateMachine.AddState(EnemyStateType.Idle, new IdleState(this, stateMachine));
 		stateMachine.AddState(EnemyStateType.Attack, new AttackState(this, stateMachine));
-		stateMachine.AddState(EnemyStateType.Die, new DieState(this, stateMachine));
 	}
 
 	protected override void Start()
@@ -33,15 +39,6 @@ public class SkeletonController : Enemy
 		{
 			stateMachine.Update();
 		}
-		else
-		{
-			Die();
-		}
-	}
-
-	protected void Die()
-	{
-		stateMachine.ChangeState(EnemyStateType.Die);
 	}
 
 	private void OnDrawGizmos()
@@ -49,8 +46,33 @@ public class SkeletonController : Enemy
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireSphere(transform.position, DataModel.AttackRange);
 	}
-}
 
+	public override void GetDamage(float damage)
+	{
+		if (curHP <= 0)
+			return;
+		
+		base.GetDamage(damage);
+
+		if (curHP <= 0)
+		{
+			Die();
+		}
+	}
+
+	private void Die()
+	{
+		Animator.SetTrigger("DoDie");
+		Destroy(20f);
+	}
+
+	
+
+	public void MakeAttack()
+	{
+		Instantiate(AttackObj, AttackPoint.position, AttackPoint.rotation);
+	}
+}
 
 namespace Skeleton
 {
@@ -129,43 +151,14 @@ namespace Skeleton
 				animator.SetTrigger("DoAttack");
 
 				//todo. 공격 구현 
-				Debug.Log($"[공격] {owner.DataModel.AttackPower}");
+				owner.MakeAttack();
 
 				lastAttakTime = 0;
+
+				//owner.GetDamange(owner.DataModel.AttackPower);
 			}
 			lastAttakTime += Time.deltaTime;
 
-		}
-	}
-
-	public class DieState : EnemyStatePattern<SkeletonController>
-	{
-		public DieState(SkeletonController owner, StateMachine<EnemyStateType, SkeletonController> stateMachine)
-			: base(owner, stateMachine)
-		{
-		}
-
-		public override void Setup()
-		{
-			target = owner.Target;
-		}
-
-		public override void Enter()
-		{
-			owner.Destroy();
-		}
-
-		public override void Exit()
-		{
-		}
-
-		public override void Transition()
-		{
-
-		}
-
-		public override void Update()
-		{
 		}
 	}
 }

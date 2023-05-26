@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
@@ -53,15 +54,13 @@ public class Enemy : MonoBehaviour
 		target = GameObject.FindGameObjectWithTag("Player").transform;
 	}
 
-	public void GetDamange(float damage)
+	public virtual void GetDamage(float damage)
 	{
 		curHP -= damage;
-
-		Debug.Log($"[GetDamange] {curHP}");
 	}
 
-	public void Destroy()
+	public void Destroy(float time = 0)
 	{
-		Destroy(gameObject);
+		Destroy(gameObject, time);
 	}
 }

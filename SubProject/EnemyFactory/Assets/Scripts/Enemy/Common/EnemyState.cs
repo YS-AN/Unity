@@ -8,7 +8,8 @@ public enum EnemyStateType
     Trace,
     Attack,
     Return,
-	Die
+	Die,
+	None
 }
 
 /// <summary>

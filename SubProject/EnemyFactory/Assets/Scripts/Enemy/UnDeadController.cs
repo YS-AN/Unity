@@ -5,6 +5,7 @@ using UnityEditor.U2D.Path;
 using UnityEngine;
 using UnDead;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.Events;
 
 public class UnDeadController : Enemy
 {
@@ -19,7 +20,6 @@ public class UnDeadController : Enemy
 		stateMachine.AddState(EnemyStateType.Trace, new TraceState(this, stateMachine));
 		stateMachine.AddState(EnemyStateType.Attack, new AttackState(this, stateMachine));
 		stateMachine.AddState(EnemyStateType.Return, new ReturnState(this, stateMachine));
-		stateMachine.AddState(EnemyStateType.Die, new DieState(this, stateMachine));
 	}
 
 	protected override void Start()
@@ -35,15 +35,27 @@ public class UnDeadController : Enemy
 		{
 			stateMachine.Update();
 		}
-		else
+	}
+
+	public override void GetDamage(float damage)
+	{
+		if (curHP <= 0)
+			return;
+
+		base.GetDamage(damage);
+
+		if (curHP <= 0)
 		{
 			Die();
 		}
 	}
 
-	protected void Die()
+	private void Die()
 	{
-		stateMachine.ChangeState(EnemyStateType.Die);
+		Animator.SetBool("IsAttack", false);
+
+		Animator.SetTrigger("DoDie");
+		Destroy(20f);
 	}
 
 	private void OnDrawGizmos()
@@ -185,6 +197,8 @@ namespace UnDead
 				//todo. 공격 구현 
 				Debug.Log($"[공격] {owner.DataModel.AttackPower}");
 
+				//owner.GetDamange(3f);
+
 				lastAttakTime = 0;
 			}
 			lastAttakTime += Time.deltaTime;
@@ -236,37 +250,6 @@ namespace UnDead
 
 			Vector2 dir = (owner.ReutnrPosition - transform.position).normalized; //일정한 속도로 제자리로 돌아가도록 함
 			transform.Translate(dir * owner.DataModel.MoveSpeed * Time.deltaTime);
-		}
-	}
-
-	public class DieState : EnemyStatePattern<UnDeadController>
-	{
-		public DieState(UnDeadController owner, StateMachine<EnemyStateType, UnDeadController> stateMachine)
-			: base(owner, stateMachine)
-		{
-		}
-
-		public override void Setup()
-		{
-			target = owner.Target;
-		}
-
-		public override void Enter()
-		{
-			owner.Destroy();
-		}
-
-		public override void Exit()
-		{
-		}
-
-		public override void Transition()
-		{
-			
-		}
-
-		public override void Update()
-		{
 		}
 	}
 }
