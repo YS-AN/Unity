@@ -60,7 +60,8 @@ public class FPSCameraController : MonoBehaviour
 	private void Look()
 	{
 		//실제 회전은 x축 회전이 위아래, y축 회전이 좌우임. 
-
+		//delta를 기준으로 보면, 화면에서 가로가 x축이고, 세로가 y축이됨.
+		// => 따라서 y변화량(회전량)은 delta.x / x변화량(회전량)은 delta.y가 되는 것
 		yRotation += lookDelta.x * mouseSensitivity * Time.deltaTime;
 		xRotation -= lookDelta.y * mouseSensitivity * Time.deltaTime;
 		//x방향 기준으로 위를 보는 게 마이너스 회전 값이기 때문에 값을 반전시켜줘야 마우스 움직임에 따라 위아래로 볼 수 있음. 
