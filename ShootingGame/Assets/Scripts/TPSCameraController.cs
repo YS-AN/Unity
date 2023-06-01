@@ -14,6 +14,9 @@ public class TPSCameraController : MonoBehaviour
 	[SerializeField]
 	private float lookDistance;
 
+	[SerializeField]
+	private Transform aimTarget;
+
 	private Vector2 lookDelta;
 	private float xRotation;
 	private float yRotation;
@@ -60,6 +63,8 @@ public class TPSCameraController : MonoBehaviour
 		//플레이어가 카메라가 바로보고 있는 곳을 같이 바라보도록 해줌
 		//카메라가 바로보는 방향의 lookDistance만큼을 바라보도록 설정함
 		Vector3 lookPoint = Camera.main.transform.position + Camera.main.transform.forward * lookDistance;
+
+		aimTarget.position = lookPoint; //바로보는 위치를 쏘고자 하는 위치로 설정 (총구를 카메라가 바로보는 방향으로 설정하기 위함)
 
 		//lookPoint.y = 0; //카메라 보고 있는 방향으로 플레이어를 보게 해주면 위 아래 볼 때 플레이어가 방향을 위 아래로 틀어지니까
 		// (ex. 카메라 위를 바라보면 플레이어가 누워버림)

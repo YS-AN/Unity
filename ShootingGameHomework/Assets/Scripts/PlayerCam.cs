@@ -49,10 +49,7 @@ public class PlayerCam : MonoBehaviour
 
 	private void Update()
 	{
-		if(isTPSCam)
-		{
-			Rotate();
-		}
+		Rotate();
 	}
 
 	private void LateUpdate()
@@ -96,7 +93,7 @@ public class PlayerCam : MonoBehaviour
 
 	private void Rotate()
 	{
-		Vector3 lookPoint = Camera.main.transform.position + Camera.main.transform.forward * lookDistance;
+		Vector3 lookPoint = focusedCam.transform.position + focusedCam.transform.forward * lookDistance;
 
 		lookPoint.y = transform.position.y;
 		transform.LookAt(lookPoint);

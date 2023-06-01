@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 
 //3D를 만들 때는 반드시 기준 위치를 캐릭터의 바닥에 두기!
 
 public class PlayerMover : MonoBehaviour
 {
 	[SerializeField]
-	private float moveSpeed;
+	private float WalkSpeed;
+
+	[SerializeField]
+	private float RunSpeed;
 
 	[SerializeField]
 	private float jumpSpeed;
@@ -20,10 +24,15 @@ public class PlayerMover : MonoBehaviour
 
 	private float ySpeed; //y축을 기준으로 가지고 있는 속력
 
+	private Animator animator;
+
+	private bool isRun;
+	private float moveSpeed;
 
 	private void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
+		animator = GetComponent<Animator>();
 	}
 
 	private void Update()
@@ -51,9 +60,45 @@ public class PlayerMover : MonoBehaviour
 		//이렇게 구현하면, world기준으로 움직이기 때문에 회전한 후 이동이 어색함.
 		// ex.내가 좌를 눌렀는데 우로 움직이는 현상 발생함.
 
+
+		moveSpeed = GetMoveSpeed(); //움직임에 따라 선형보간으로 속도를 받아오도록 함
+
 		//바로보는 방향을 기준으로 움직이도록 변경함
 		characterController.Move(transform.forward * moveDir.z * moveSpeed * Time.deltaTime); //앞을 바로보는 방향을 기준으로 z축 방향으로 이동, 
 		characterController.Move(transform.right * moveDir.x * moveSpeed * Time.deltaTime); //옆을 바로보는 방향을 기준으로 x축 방향으로 이동함. (왼쪽이면 -1곱해주고, 오른쪽은 1을 곱해주니까 자연스럽게 원하는 방향이동이 가능해짐)
+
+
+		//*애니메이션 설정
+		//dampTime, deltaTime이 없으면 (특히 블랜더 애니메이션) 전환에서 애니메이션이 그 즉시 바뀜 -> 부자연스러워 보임
+		//	-> dampTime, deltaTime을 넣어서 애니메이션이 천천히, 슬그머니 전환될 수 있도록 유도함
+		// dampTime : 자연스러운 전환 속도
+		// deltaTime : 시간
+		animator.SetFloat("XSpeed", moveDir.x, 0.1f, Time.deltaTime); 
+		animator.SetFloat("YSpeed", moveDir.z, 0.1f, Time.deltaTime);
+		animator.SetFloat("MoveSpeed", moveSpeed);
+	}
+
+	private float GetMoveSpeed()
+	{
+		//Mathf.Lerp(현재 수치, 목표로 하는 수치, 가중치) 
+		//	-> 선형보간 : 현재 수치와 목표로 하는 수치 사이에 N%값(가중치)을 반환함
+		//		(가중치가 높을 수록 값이 빠르게 변함)
+
+
+		if (moveDir.magnitude == 0) //magnitude : 백터의 크기 -> 백터 크기가 0이면 움직임 없음
+		{
+			return Mathf.Lerp(moveSpeed, 0, 0.5f); // 안 움직일 때는 속도가 점점 떨어지도록 목표 값을 0으로 세팅함 
+		}
+
+		return isRun ? Mathf.Lerp(moveSpeed, RunSpeed, 0.5f) : Mathf.Lerp(moveSpeed, WalkSpeed, 0.5f);
+		//뛰는 중에는 현재 값이 뛰는 속도까지
+		
+	}
+
+	private void OnRun(InputValue value)
+	{
+		isRun = value.isPressed;
+		moveSpeed = isRun ? 3 : 0;
 	}
 
 	//y위치를 조정해 중력이 있는 것처럼 만들어 주는 함수
