@@ -13,14 +13,17 @@ public class Gun : MonoBehaviour
 	[SerializeField]
 	private int damage;
 
-	[SerializeField]
-	private ParticleSystem hitEffect; 
-
+	
 	[SerializeField]
 	private ParticleSystem muzzleEffect;
 
+	/* //공유 자원으로 변경함 -> 필요할 때마 리소스 매니저에서 가져오도록 함
+	[SerializeField]
+	private ParticleSystem hitEffect;
+
 	[SerializeField]
 	private TrailRenderer bulletTrail; 
+	//*/
 
 	[SerializeField]
 	private float bulletSpeed;
@@ -40,6 +43,8 @@ public class Gun : MonoBehaviour
 
 			//총알에 맞아야 하는 물체와 맞지 말아야 할 물체를 구분하기 -> 인터페이스로 구분
 			IHittable hittable = hit.transform.GetComponent<IHittable>(); //인터페이스는 컴포넌트 검색이 가능함 -> 해당 인터페이스를 받은 녀석만 가져올 수 있음 
+
+			ParticleSystem hitEffect = GameManager.Resource.Load<ParticleSystem>("Prefabs/HitEffect");
 
 			//var effect = Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal)); //LookRotation : 백터3를 넣어주면 방향을 보는 방향으로 회전 시켜줌
 			//var effect = GameManager.Pool.Get(hitEffect, hit.point, Quaternion.LookRotation(hit.normal)); // ObjectPool적용 -> 대여
@@ -78,6 +83,20 @@ public class Gun : MonoBehaviour
 	/// <param name="endPoint">이동 목표 위치</param>
 	IEnumerator TrailRountine(Vector3 startPoint, Vector3 endPoint)
 	{
+		/*
+			Resources 폴더에 넣어두고, 경로만 설정해주면 유니티 상에서 드래그앤 드롭과 같은 동작을 함
+
+			BUT 유니티는 Resources 폴더 사용을 권장하지 않음.
+			Resources 폴더 안에 있는 것들은 항상 준비 상태로 대기 중임. -> 게임 빌드 시 무조건 포함되어 나오기 때문에 게임 사이즈가 커짐. 
+
+			보통은 프로토타입을 제작할 때 사용함. (6개월 이내 짧은 프로젝트에서 사용)
+			장기 프로젝트에서는
+			 * 에셋 번들(게임 시작하려고 하면 추가 리스소 다운 받는다고 하는 경우가 에셋 번들 사용하는 예임),
+			 * 에셋 어드레서블(2019년부터 나옴. 최근 트렌드임)
+			방식을 추천함
+		*/
+		TrailRenderer bulletTrail = Resources.Load<TrailRenderer>("Prefabs/BulletTail"); //드래그앤 드롭과 같은 동작 -> 미리 만들어두고, 필요에 따라 호출함
+
 		//TrailRenderer trail = Instantiate(bulletTrail, muzzleEffect.transform.position, Quaternion.identity); //매번 생성하는 방식
 
 		//var trail = GameManager.Pool.Get(bulletTrail, startPoint, Quaternion.identity);  // ObjectPool적용 -> 대여

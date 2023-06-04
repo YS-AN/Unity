@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerShooter : MonoBehaviour
 {
+	public TrailRenderer bulletTrail;
+
 	[SerializeField]
 	private float reloadTime;
 
@@ -22,8 +24,6 @@ public class PlayerShooter : MonoBehaviour
 
 	private void Awake()
 	{
-		Resources.Load<TrailRenderer>("Prefabs/BulletTail"); //Resources 폴더에 넣어두고, 경로만 설정해주면 유니티 상에서 드래그앤 드롭과 같은 동작을 함
-
 		animator = GetComponent<Animator>();
 
 		//var startInfo = animator.GetCurrentAnimatorStateInfo();
