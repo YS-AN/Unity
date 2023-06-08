@@ -5,12 +5,19 @@ using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
+	//UI에서 EventSystem이 없으면 아예 반응하지 않음. 
 	private EventSystem eventSystem;
 
 	private Canvas popUpCanvas; //팝업 UI는 모두 popUpCanvas의 하위 자식으로 만들 예정
-								//Canvas를 벗어난 UI는 가끔 설정하지 않은 위치에 나올 수 있기 때문에 모든 ui는 Canvas의 하위메뉴로 들어가 있어야하기 때문임
+								//Canvas 벗어난 UI는 가끔 설정하지 않은 위치에 나올 수 있기 때문에 모든 ui는 Canvas 하위메뉴로 들어가 있어야하기 때문임
+
+	private Canvas windowCanvas; //윈도우 UI가 팝업 UI를 가리면 안되지만, 게임 씬보다는 앞에 있어야 해
+								 //  -> 우선순위 조절이 필요  -> 윈도우 캔버스를 만듦
+
+	private Canvas inGameCanvas;
 
 	private Stack<PopUpUI> popUpStack; //ui는 statck 형식임!! -> 열린 순서에 맞게 차례대로 닫혀야 함
+	private List<WindowUI> windowUI; 
 
 	private void Awake()
 	{
@@ -22,7 +29,18 @@ public class UIManager : MonoBehaviour
 		popUpCanvas.gameObject.name = "PopUpCanvas";
 		popUpCanvas.sortingOrder = 100; //모든 게임 씬 위에 나타나도록 order를 좀 높게 줌
 
-		popUpStack = new Stack<PopUpUI>(); 
+		popUpStack = new Stack<PopUpUI>();
+
+
+		windowCanvas = GameManager.Resource.Instantiate<Canvas>("UI/Canvas");
+		windowCanvas.gameObject.name = "WindowCanvas";
+		windowCanvas.sortingOrder = 10;
+
+		//gameSceneCanvas.sortingOrder = 1;
+
+		inGameCanvas = GameManager.Resource.Instantiate<Canvas>("UI/Canvas");
+		inGameCanvas.gameObject.name = "InGameCanvas";
+		inGameCanvas.sortingOrder = 0; //모든 ui보다 아래에 있어야 해 -> 거의 게임씬과 비슷한 order여야 해.
 	}
 
 	public T ShowPopUpUI<T>(T popUpUi) where T : PopUpUI
@@ -71,5 +89,52 @@ public class UIManager : MonoBehaviour
 		{
 			Time.timeScale = 1; //시간을 다시 흐르게 함 -> 일시정지 해제
 		}
+	}
+
+	public T ShowWindowUI<T>(T windowUI) where T : WindowUI
+	{
+		T ui = GameManager.Pool.GetUI(windowUI);
+		ui.transform.SetParent(windowCanvas.transform, false);
+
+		//윈도우 창 닫았다가 다시 열면 닫았던 위치에서 다시 열리는 이유는 pooling으로 대여하는 방식으로 사용해서 그런 거임. 
+		//닫은 위치를 기억하고 있기 때문임. 
+		//늘 같은 곳에서 열고 싶다면? 화면을 열고 위치를 다시 조정해주면 돼
+		ui.transform.position = new Vector3(521, 163, 0);
+
+		return ui;
+	}
+
+	public T ShowWindowUI<T>(string path) where T : WindowUI
+	{
+		return ShowWindowUI(GameManager.Resource.Load<T>(path));
+	}
+
+	//닫을 창을 받아옴
+	public void CloseWindowUI<T>(T windowUI) where T : WindowUI
+	{
+		GameManager.Pool.Release(windowUI.gameObject);
+	}
+
+	public void SelectWindowUI<T>(T windowUI) where T : WindowUI
+	{
+		windowUI.transform.SetAsLastSibling(); //같은 레벨의 오브젝트 중 SetAsLastSibling한 윈도우 화면을 가장 마지막으로 설정함 = 최상위로 올라옴
+	}
+
+	public T ShowInGameUI<T>(T inGameUI) where T : InGameUI
+	{
+		T ui = GameManager.Pool.GetUI(inGameUI);
+		ui.transform.SetParent(inGameCanvas.transform, false);
+
+		return ui;
+	}
+
+	public T ShowInGameUI<T>(string path) where T : InGameUI
+	{
+		return ShowInGameUI(GameManager.Resource.Load<T>(path));
+	}
+
+	public void CloseInGameUI<T> (T inGameUI) where T : InGameUI
+	{
+		GameManager.Pool.ReleaseUI(inGameUI.gameObject);
 	}
 }

@@ -27,6 +27,7 @@ public class TowerPlace : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
 	/// <param name="eventData"></param>
 	public void OnPointerClick(PointerEventData eventData)
 	{
+		/* //클릭 테스트
 		if(eventData.button == PointerEventData.InputButton.Left) //마우스 좌클릭한 경우
 		{
 			Debug.Log($"좌클릭 : {eventData.clickCount}, {eventData.clickTime}");
@@ -35,7 +36,12 @@ public class TowerPlace : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
 		{
 			Debug.Log($"우클릭 : {eventData.clickCount}, {eventData.clickTime}");
 		}
-		
+		//*/
+
+		BuildInGameUI buildUI = GameManager.UI.ShowInGameUI<BuildInGameUI>("UI/BuildInGameUI");
+		buildUI.SetTarget(transform); //UI가 현재 오브젝트를 따라 다니도록 설정함
+
+		buildUI.towerPlace = this; //towerPlace를 현재 towerPlace로 설정함
 	}
 
 	/// <summary>
@@ -65,5 +71,18 @@ public class TowerPlace : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
 	public void OnDrag(PointerEventData eventData)
 	{
 		transform.position += new Vector3(eventData.delta.x, 0, eventData.delta.y);
+	}
+
+	/// <summary>
+	/// 타워 건설
+	/// </summary>
+	/// <param name="data"></param>
+	public void BuildTower(TowerData data)
+	{
+		//=> 타워 건설 = TowerPlace를 제거하고, 현재 TowerPlace 위치에 타워를 만듦
+
+		GameManager.Resource.Destroy(gameObject); //현재 towerPlace 삭제
+		GameManager.Resource.Instantiate(data.Towers[0].Tower, transform.position, transform.rotation);
+		//현재 위치에 레벨 1 타워를 만듦
 	}
 }
