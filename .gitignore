@@ -79,6 +79,7 @@ crashlytics-build.properties
 */Assets/TextMesh Pro
 */Assets/Tilemap
 */Assets/Animations/*.fbx
+*/Assets/Resources/
 
 # SubProject Assets
 */*/Assets/Imports
