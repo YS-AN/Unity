@@ -66,10 +66,11 @@ public class PlayerMover : MonoBehaviour
 
 	private IEnumerator MoveRoutine(Vector3 target)
 	{
-		animator.SetTrigger("Move");
+		animator.SetBool("IsMove", true);
 
 		meshAgent.destination = target;
 
+		//y축은 고정
 		float playerDistancetoFloor = transform.position.y - target.y;
 		target.y += playerDistancetoFloor;
 
@@ -77,48 +78,6 @@ public class PlayerMover : MonoBehaviour
 		{
 			yield return null;
 		}
-
-		/*
-		while (Vector3.Distance(transform.position, target) > 0.1f)
-		{
-			//Debug.Log($"transform : ({transform.position.x}, {transform.position.y}, {transform.position.z}) / target : ({target.x}, {target.y}, {target.z})");
-
-			//Turn(target);
-
-			
-			Vector3 destination = Vector3.MoveTowards(transform.position, target, MoveSpeed * Time.deltaTime);
-			transform.position = destination;
-
-			Vector3 direction = target - transform.position;	
-			Vector3 movement = direction.normalized * MoveSpeed * Time.deltaTime;
-			characterController.Move(movement);
-
-			//Vector2 cameraPos = Camera.main.ScreenToWorldPoint(target);
-			//cameraPos.x - transform.position.z;
-
-
-
-
-			yield return null; 
-		}
-		//*/
-
-
+		animator.SetBool("IsMove", false);
 	}
-
-
-	/*
-	private void Turn(Vector3 target)
-	{
-		
-
-		Vector3 dir = target - transform.position;
-		Vector3 dirXZ = new Vector3(dir.x, 0f, dir.z);
-
-		Debug.Log($"[Turn] dirXZ : ({dirXZ.x}, {dirXZ.y}, {dirXZ.z})");
-
-		Quaternion targetRot = Quaternion.LookRotation(dirXZ);
-		transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, RotationSpeed * Time.deltaTime);
-	}
-	//*/
 }
