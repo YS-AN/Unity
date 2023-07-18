@@ -36,7 +36,7 @@ public class CustomerSpawner : MonoBehaviour
 			if(seat != null)
 			{
 				var newCust = Instantiate(enemyPrefab, SpawnPoint.position, SpawnPoint.rotation);
-				newCust.mover.info.Init(seat, "Chair1");
+				newCust.mover.info.Init(seat, 0);
 				newCust.mover?.OnMove();
 			}
 		}

@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class Seat : MonoBehaviour
 {
-	private Chair[] chairs;
-	public Chair[] Chairs { get {  return chairs; } }
+	private Chair[] _chairs;
+	public Chair[] Chairs { get {  return _chairs; } }
 
-	private Table table;
-	public Table Table { get { return table; } }
+	private Table _table;
+	public Table Table { get { return _table; } }
+
+	private bool _isRight;
+	private bool IsRight { get { return _isRight; } }
 
 	private void Awake()
 	{
-		chairs = GetComponentsInChildren<Chair>();
-		table = GetComponent<Table>();
+		_chairs = GetComponentsInChildren<Chair>();
+		_table = GetComponentInChildren<Table>();
+
+		_isRight = transform.rotation.y == 1;
 	}
 }
