@@ -91,3 +91,7 @@ crashlytics-build.properties
 # temp exclude
 */UndeadSurvivor
 RogueLike/
+
+# 0719 test project exclude
+*/GraphicDesignTest
+*/GraphicTest
