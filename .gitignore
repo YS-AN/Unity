@@ -88,9 +88,16 @@ crashlytics-build.properties
 */*/Assets/TextMesh Pro
 */*/Assets/Tilemap
 
+# build file exclude 
+*/*/build
+
+# Photon file exclude
+*/Assets/Photon
+
 # temp exclude
 */UndeadSurvivor
 RogueLike/
+NetworkBasic
 
 # 0719 test project exclude
 */GraphicDesignTest
