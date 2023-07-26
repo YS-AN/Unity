@@ -8,7 +8,7 @@ public class StatePanel : MonoBehaviour
     [SerializeField] RectTransform content;
     [SerializeField] TMP_Text logPrefab;
 
-    private ClientState state;
+	private ClientState state;
 
     void Update()
     {

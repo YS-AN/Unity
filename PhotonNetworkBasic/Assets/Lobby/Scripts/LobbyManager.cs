@@ -20,7 +20,22 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
 	private void Start()
 	{
-        SetActivePanel(Panel.Login); //무조건 시작 시 Login화면 나오도록 설정
+		SetNextAction();
+	}
+
+	/// <summary>
+	/// 현재 포톤 네트워크 상황에 맞는 단계로 넘어가기 위한 세팅
+	/// </summary>
+	private void SetNextAction()
+	{
+		if (PhotonNetwork.IsConnected)
+			OnConnectedToMaster();
+		else if (PhotonNetwork.InRoom)
+			OnJoinedRoom();
+		else if (PhotonNetwork.InLobby)
+			OnJoinedLobby();
+		else
+			OnDisconnected(DisconnectCause.None);
 	}
 
 	/// <summary>
@@ -62,11 +77,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 		//플레이어의 상태를 초기화해줘야 함 -> 다른 방에 들어갔을 때 이전 상태가 유지될 수 있음
 		PhotonNetwork.LocalPlayer.SetReady(false);
 		PhotonNetwork.LocalPlayer.SetLoad(false);
+		//모든 플레이어가 동일하게 시작하기 위해서 일단 게임 방에 들어갈 때 Load 상태 값을 false로 들어가도록 함. 
+		// -> 다음 씬으로 이동한 시점에서 상태를 true로 변경하면, 접속 순서에 따라 플레이어 load의 상태값이 변경 됨.
+		//이와 같은 과정을 통해 모든 플레이어가 씬에 접속했는지 여부를 판단할 수 있음. -> 모두가 true일 때 게임을 시작하도록 함
+		//(GameManager > Start 메소드에서 true로 변경)
 
 		PhotonNetwork.AutomaticallySyncScene = true; // 마스터 클라이언트와 일반 클라이언트들이 레벨을 동기화함.
 													 // => 씬을 전환할 때 방장이 있는 씬으로 모두 같이 이동함
-
-		roomPanel.EntryPlayer(PhotonNetwork.LocalPlayer); 
 	}
 
 	/// <summary>
@@ -75,9 +92,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 	public override void OnLeftRoom()
 	{
 		PhotonNetwork.AutomaticallySyncScene = false; //false로 안 돌려 두면 Local Player가 방을 나갈 때 모든 유저가 같이 따라서 나가게 됨.
-
-		roomPanel.LeavePlayer(PhotonNetwork.LocalPlayer);
-
+		
 		SetActivePanel(Panel.Menu);
 	}
 
@@ -106,7 +121,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 	public override void OnMasterClientSwitched(Player newMasterClient)
 	{
 		if(newMasterClient.IsMasterClient)
-			roomPanel.CheckPlayerReady();
+			roomPanel.CheckPlayerReadyState();
 	}
 
 	/// <summary>

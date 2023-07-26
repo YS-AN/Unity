@@ -8,12 +8,15 @@ public class MenuPanel : MonoBehaviour
     [SerializeField] GameObject createRoomPanel;
     [SerializeField] TMP_InputField roomNameInputField;
     [SerializeField] TMP_InputField maxPlayerInputField;
+    [SerializeField] TMP_Text UserId;
 
 	public void OnEnable()
 	{
         createRoomPanel.SetActive(false);
 		roomNameInputField.text = string.Empty; //방 이름 클리어
         maxPlayerInputField.text = string.Empty; //인원수 클리어
+
+        UserId.text = PhotonNetwork.NickName;
 	}
 
 	public void CreateRoomMenu()

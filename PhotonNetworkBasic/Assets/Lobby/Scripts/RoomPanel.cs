@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -14,31 +15,43 @@ public class RoomPanel : MonoBehaviour
     [SerializeField] Button startButton;
     [SerializeField] TextMeshProUGUI roomName;
 
+	private Dictionary<int, PlayerEntry> playerDictionary;
+
+	private void Awake()
+	{
+		playerDictionary = new Dictionary<int, PlayerEntry>();
+	}
+
 	private void OnEnable()
 	{
         roomName.text = PhotonNetwork.CurrentRoom.Name;
+
 		startButton.gameObject.SetActive(false);
+
+		SetInPlayer();
+		CheckPlayerReadyState();
 	}
 
-    public void EntryPlayer(Player player)
-    {
-		if (player.IsLocal)
-			SetExistingPlayer();
-		else
-			InstantiatePlayer(player);
-
-		if (PhotonNetwork.IsMasterClient) //방장이니?
-			CheckPlayerReady();
+	private void OnDisable()
+	{
+		foreach (int actorNumber in playerDictionary.Keys)
+		{
+			Destroy(playerDictionary[actorNumber].gameObject);
+		}
+		playerDictionary.Clear();
 	}
 
-    public void LeavePlayer(Player player)
+	public void EntryPlayer(Player player)
     {
-		int index = GetSiblingIndexNum(player);
+		InstantiatePlayer(player);
+		CheckPlayerReadyState();
+	}
 
-		if (index < 0)
-			return;
-
-		Destroy(playerContent.GetChild(index).gameObject);
+    public void LeavePlayer(Player leavePlayer)
+    {
+		Destroy(playerDictionary[leavePlayer.ActorNumber].gameObject);
+		playerDictionary.Remove(leavePlayer.ActorNumber);
+		CheckPlayerReadyState();
 	}
 
 	public void UpdatePlayerState(Player player)
@@ -46,13 +59,13 @@ public class RoomPanel : MonoBehaviour
 		GetPalyerEntry(player)?.UpdateReadyInfo();
 
 		if (PhotonNetwork.IsMasterClient) //방장이니?
-			CheckPlayerReady();
+			CheckPlayerReadyState();
 	}
 
 	/// <summary>
-	/// 이미 접속해 있는 사용자 세팅
+	/// 이미 접속해 있는 사용자 + 본인 생성
 	/// </summary>
-	private void SetExistingPlayer()
+	private void SetInPlayer()
 	{
 		foreach (Player player in PhotonNetwork.PlayerList)
 		{
@@ -64,28 +77,10 @@ public class RoomPanel : MonoBehaviour
 	{
 		PlayerEntry entry = Instantiate(playerEntryPrefab, playerContent);
 		entry.SetPlayer(player);
+		playerDictionary.Add(player.ActorNumber, entry);
 	}
 
 
-	/// <summary>
-	/// 하이라키 구조 상 index 번호를 가져오기
-	/// </summary>
-	/// <param name="chkPlayer"></param>
-	/// <returns></returns>
-	private int GetSiblingIndexNum(Player chkPlayer)
-    {
-		var existedPlayer = playerContent.GetComponentsInChildren<PlayerEntry>();
-
-		int index = 0;
-		foreach(var player in existedPlayer)
-		{
-			if(player.player.ActorNumber == chkPlayer.ActorNumber) 
-				return index;
-
-			index++;
-		}
-		return -1;
-	}
 
 	private PlayerEntry GetPalyerEntry(Player chkPlayer)
 	{
@@ -122,15 +117,21 @@ public class RoomPanel : MonoBehaviour
 	/// <summary>
 	/// 모든 플레이어가 ready 상태가 되면 start button 활성 처리
 	/// </summary>
-	public void CheckPlayerReady()
+	public void CheckPlayerReadyState()
 	{
-		int readyCount = 0;
-		foreach (Player player in PhotonNetwork.PlayerList)
+		if (PhotonNetwork.IsMasterClient == false) //방장이 아니면 굳이 확인할 필요는 없음. 
+			startButton.gameObject.SetActive(false);
+		else
 		{
-			if (player.GetReady())
-				readyCount++;
+			int readyCount = 0;
+			foreach (Player player in PhotonNetwork.PlayerList)
+			{
+				if (player.GetReady())
+					readyCount++;
+			}
+			startButton.gameObject.SetActive(readyCount == PhotonNetwork.PlayerList.Length);
 		}
 
-		startButton.gameObject.SetActive(readyCount == PhotonNetwork.PlayerList.Length);
+		
 	}
 }
