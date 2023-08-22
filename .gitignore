@@ -102,3 +102,10 @@ NetworkBasic
 # 0719 test project exclude
 */GraphicDesignTest
 */GraphicTest
+
+# Project Setting
+*/Assets/Configs/URPSettings
+*/Assets/Configs/XRSettings
+
+# XR Toolkit
+*/*/*/XR Interaction Toolkit
